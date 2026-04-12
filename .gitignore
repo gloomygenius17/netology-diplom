@@ -1,0 +1,29 @@
+# Terraform
+*.tfstate
+*.tfstate.*
+.terraform/
+terraform.tfvars
+terraform.tfvars.*
+*.tfplan
+
+# Ansible
+*.retry
+.ansible/
+ansible/playbooks/*.log
+
+# SSH keys
+*.pem
+*.key
+id_*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Yandex Cloud
+key.json
+sa-key.json
