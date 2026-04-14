@@ -1,0 +1,93 @@
+# yandex_vpc_security_group.bastion:
+resource "yandex_vpc_security_group" "bastion" {
+    created_at  = "2026-04-12T16:31:13Z"
+    description = null
+    folder_id   = "b1g9piao3bf0511t8kl5"
+    id          = "enp3rcnk5qtfqh5p2crt"
+    labels      = {}
+    name        = "bastion-sg"
+    network_id  = "enp46h9qa0hsc83k38t5"
+    status      = "ACTIVE"
+
+    egress {
+        description       = null
+        from_port         = -1
+        id                = "enp2lc3mf2pm2rd3sk68"
+        labels            = {}
+        port              = -1
+        predefined_target = null
+        protocol          = "ANY"
+        security_group_id = null
+        to_port           = -1
+        v4_cidr_blocks    = [
+            "0.0.0.0/0",
+        ]
+        v6_cidr_blocks    = []
+    }
+
+    ingress {
+        description       = "Allow all from public subnet (Zabbix server)"
+        from_port         = -1
+        id                = "enp9no39v5qjnglg8rm4"
+# yandex_vpc_security_group.public:
+resource "yandex_vpc_security_group" "public" {
+    created_at  = "2026-04-12T16:31:15Z"
+    description = null
+    folder_id   = "b1g9piao3bf0511t8kl5"
+    id          = "enpofjdveh9f9p9lsmui"
+    labels      = {}
+    name        = "public-sg"
+    network_id  = "enp46h9qa0hsc83k38t5"
+    status      = "ACTIVE"
+
+    egress {
+        description       = null
+        from_port         = -1
+        id                = "enpr91m0nh9729s9pfha"
+        labels            = {}
+        port              = -1
+        predefined_target = null
+        protocol          = "ANY"
+        security_group_id = null
+        to_port           = -1
+        v4_cidr_blocks    = [
+            "0.0.0.0/0",
+        ]
+        v6_cidr_blocks    = []
+    }
+
+    ingress {
+        description    = "HTTP from anywhere (ALB)"
+        from_port      = -1
+        id             = "enpkjv61i1nvudpr1ker"
+# yandex_vpc_security_group.private:
+resource "yandex_vpc_security_group" "private" {
+    created_at  = "2026-04-12T16:31:17Z"
+    description = null
+    folder_id   = "b1g9piao3bf0511t8kl5"
+    id          = "enpbeebts8b7nlpbp5fv"
+    labels      = {}
+    name        = "private-sg"
+    network_id  = "enp46h9qa0hsc83k38t5"
+    status      = "ACTIVE"
+
+    egress {
+        description       = null
+        from_port         = -1
+        id                = "enpvfvhg16vo4cq8dfor"
+        labels            = {}
+        port              = -1
+        predefined_target = null
+        protocol          = "ANY"
+        security_group_id = null
+        to_port           = -1
+        v4_cidr_blocks    = [
+            "0.0.0.0/0",
+        ]
+        v6_cidr_blocks    = []
+    }
+
+    ingress {
+        description    = "Elasticsearch from public subnet"
+        from_port      = -1
+        id             = "enphqpdt5tfj9qn7pr3o"

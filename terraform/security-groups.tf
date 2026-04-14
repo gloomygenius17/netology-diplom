@@ -12,7 +12,7 @@ resource "yandex_vpc_security_group" "bastion" {
   ingress {
     protocol       = "ANY"
     v4_cidr_blocks = ["10.10.0.0/24"]
-    description    = "Allow all from public subnet (Zabbix server)"
+    description    = "Allow all from public subnet"
   }
 
   egress {
@@ -29,7 +29,7 @@ resource "yandex_vpc_security_group" "public" {
     protocol       = "TCP"
     port           = 22
     v4_cidr_blocks = ["10.10.0.0/24"]
-    description    = "SSH from bastion (by IP)"
+    description    = "SSH from bastion"
   }
   ingress {
     protocol       = "TCP"
@@ -49,6 +49,12 @@ resource "yandex_vpc_security_group" "public" {
     v4_cidr_blocks = ["0.0.0.0/0"]
     description    = "Kibana web UI"
   }
+  ingress {
+    protocol       = "TCP"
+    port           = 10050
+    v4_cidr_blocks = ["10.10.0.0/24", "10.10.1.0/24", "10.10.2.0/24"]
+    description    = "Zabbix agent from all subnets"
+  }
 
   egress {
     protocol       = "ANY"
@@ -64,25 +70,25 @@ resource "yandex_vpc_security_group" "private" {
     protocol       = "TCP"
     port           = 80
     v4_cidr_blocks = ["10.10.0.0/24"]
-    description    = "HTTP from ALB subnet (public-a)"
+    description    = "HTTP from ALB subnet"
   }
   ingress {
     protocol       = "TCP"
     port           = 22
-    v4_cidr_blocks = ["10.10.0.0/24"]
-    description    = "SSH from bastion (by IP)"
+    v4_cidr_blocks = ["10.10.0.0/24", "10.10.1.0/24", "10.10.2.0/24"]
+    description    = "SSH from bastion and web subnets"
   }
   ingress {
     protocol       = "TCP"
     port           = 9200
-    v4_cidr_blocks = ["10.10.0.0/24"]
-    description    = "Elasticsearch from public subnet"
+    v4_cidr_blocks = ["10.10.0.0/24", "10.10.1.0/24", "10.10.2.0/24"]
+    description    = "Elasticsearch from public and web subnets"
   }
   ingress {
     protocol       = "TCP"
     port           = 10050
-    v4_cidr_blocks = ["10.10.0.0/24"]
-    description    = "Zabbix agent from public subnet"
+    v4_cidr_blocks = ["10.10.0.0/24", "10.10.1.0/24", "10.10.2.0/24"]
+    description    = "Zabbix agent from all subnets"
   }
 
   egress {
