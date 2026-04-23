@@ -1,0 +1,24 @@
+---
+- name: Install nginx on web servers
+  hosts: webservers
+  become: yes
+  tasks:
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+
+    - name: Install nginx
+      apt:
+        name: nginx
+        state: present
+
+    - name: Create index.html
+      copy:
+        content: "<h1>Web Server - {{ ansible_hostname }}</h1>"
+        dest: /var/www/html/index.html
+
+    - name: Start nginx
+      systemd:
+        name: nginx
+        state: started
+        enabled: yes

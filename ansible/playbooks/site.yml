@@ -1,0 +1,4 @@
+---
+- import_playbook: nginx.yml
+- import_playbook: zabbix-agent.yml
+- import_playbook: filebeat.yml

@@ -1,5 +1,6 @@
 data "yandex_compute_image" "ubuntu" {
-  family = "ubuntu-2204-lts"
+  #Ubuntu 22.04 LTS
+  image_id = "fd88esinna6s76ta4pvq"
 }
 
 locals {
@@ -76,7 +77,6 @@ resource "yandex_compute_instance" "web1" {
 
   metadata = {
     ssh-keys = "ubuntu:${var.ssh_public_key}"
-    user-data = "${file("user-data.sh")}"
   }
 
   scheduling_policy {
@@ -113,7 +113,6 @@ resource "yandex_compute_instance" "web2" {
 
   metadata = {
     ssh-keys = "ubuntu:${var.ssh_public_key}"
-    user-data = "${file("user-data.sh")}"
   }
 
   scheduling_policy {

@@ -1,0 +1,14 @@
+all:
+  children:
+    webservers:
+      hosts:
+        web1.ru-central1.internal:
+        web2.ru-central1.internal:
+    all:
+      hosts:
+        bastion.ru-central1.internal:
+        zabbix.ru-central1.internal:
+        elasticsearch.ru-central1.internal:
+        kibana.ru-central1.internal:
+        web1.ru-central1.internal:
+        web2.ru-central1.internal:

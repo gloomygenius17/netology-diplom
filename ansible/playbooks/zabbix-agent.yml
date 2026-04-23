@@ -1,0 +1,35 @@
+---
+- name: Install zabbix-agent on all VMs
+  hosts: all
+  become: yes
+  vars:
+    zabbix_server_ip: "10.10.0.15"
+  tasks:
+    - name: Install zabbix-agent
+      apt:
+        name: zabbix-agent
+        state: present
+
+    - name: Configure zabbix-agent
+      copy:
+        dest: /etc/zabbix/zabbix_agentd.conf
+        content: |
+          LogFile=/var/log/zabbix/zabbix_agentd.log
+          LogType=file
+          Server={{ zabbix_server_ip }}
+          ServerActive={{ zabbix_server_ip }}
+          Hostname={{ ansible_hostname }}
+          ListenIP=0.0.0.0
+
+    - name: Create log directory
+      file:
+        path: /var/log/zabbix
+        state: directory
+        owner: zabbix
+        group: zabbix
+
+    - name: Start zabbix-agent
+      systemd:
+        name: zabbix-agent
+        state: restarted
+        enabled: yes
