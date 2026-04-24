@@ -1,0 +1,92 @@
+---
+- name: Install and configure Zabbix server
+  hosts: zabbix_server
+  become: yes
+  vars:
+    zabbix_version: "7.0"
+  tasks:
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+
+    - name: Install PostgreSQL
+      apt:
+        name:
+          - postgresql
+          - postgresql-contrib
+        state: present
+
+    - name: Create Zabbix database and user
+      become_user: postgres
+      vars:
+        zabbix_db_password: "{{ vault_zabbix_db_password | default('zabbix_password') }}"
+      block:
+        - name: Create database user
+          postgresql_user:
+            name: zabbix
+            password: "{{ zabbix_db_password }}"
+            role_attr_flags: LOGIN
+          no_log: true
+        - name: Create database
+          postgresql_db:
+            name: zabbix
+            owner: zabbix
+
+    - name: Download Zabbix repo
+      get_url:
+        url: https://repo.zabbix.com/zabbix/{{ zabbix_version }}/ubuntu/pool/main/z/zabbix-release/zabbix-release_{{ zabbix_version }}-1+ubuntu22.04_all.deb
+        dest: /tmp/zabbix-release.deb
+
+    - name: Install Zabbix repo
+      apt:
+        deb: /tmp/zabbix-release.deb
+
+    - name: Install Zabbix server and frontend
+      apt:
+        name:
+          - zabbix-server-pgsql
+          - zabbix-frontend-php
+          - php8.1-pgsql
+          - zabbix-nginx-conf
+          - zabbix-sql-scripts
+        state: present
+
+    - name: Import Zabbix schema
+      become_user: zabbix
+      shell: zcat /usr/share/zabbix-sql-scripts/postgresql/server.sql.gz | psql zabbix
+
+    - name: Configure Zabbix server database
+      lineinfile:
+        path: /etc/zabbix/zabbix_server.conf
+        regexp: '^# DBPassword='
+        line: 'DBPassword={{ vault_zabbix_db_password | default("zabbix_password") }}'
+
+    - name: Configure Zabbix nginx
+      template:
+        src: zabbix_nginx.conf.j2
+        dest: /etc/nginx/sites-available/zabbix
+      notify: restart nginx
+
+    - name: Enable Zabbix nginx site
+      file:
+        src: /etc/nginx/sites-available/zabbix
+        dest: /etc/nginx/sites-enabled/zabbix
+        state: link
+      notify: restart nginx
+
+    - name: Remove default nginx site
+      file:
+        path: /etc/nginx/sites-enabled/default
+        state: absent
+      notify: restart nginx
+
+  handlers:
+    - name: restart nginx
+      systemd:
+        name: nginx
+        state: restarted
+    - name: restart zabbix-server
+      systemd:
+        name: zabbix-server
+        state: restarted
+        enabled: yes

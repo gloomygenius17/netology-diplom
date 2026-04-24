@@ -4,6 +4,15 @@ all:
       hosts:
         web1.ru-central1.internal:
         web2.ru-central1.internal:
+    zabbix_server:
+      hosts:
+        zabbix.ru-central1.internal:
+    elasticsearch_server:
+      hosts:
+        elasticsearch.ru-central1.internal:
+    kibana_server:
+      hosts:
+        kibana.ru-central1.internal:
     all:
       hosts:
         bastion.ru-central1.internal:
@@ -12,3 +21,5 @@ all:
         kibana.ru-central1.internal:
         web1.ru-central1.internal:
         web2.ru-central1.internal:
+  vars:
+    ansible_user: ubuntu

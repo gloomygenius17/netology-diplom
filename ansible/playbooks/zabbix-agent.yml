@@ -1,25 +1,24 @@
 ---
-- name: Install zabbix-agent on all VMs
+- name: Install and configure zabbix-agent on all VMs
   hosts: all
   become: yes
   vars:
-    zabbix_server_ip: "10.10.0.15"
+    zabbix_server_host: "{{ hostvars['zabbix.ru-central1.internal']['ansible_default_ipv4']['address'] }}"
   tasks:
     - name: Install zabbix-agent
       apt:
         name: zabbix-agent
         state: present
+        update_cache: yes
 
-    - name: Configure zabbix-agent
-      copy:
+    - name: Create zabbix-agent config from template
+      template:
+        src: zabbix_agentd.conf.j2
         dest: /etc/zabbix/zabbix_agentd.conf
-        content: |
-          LogFile=/var/log/zabbix/zabbix_agentd.log
-          LogType=file
-          Server={{ zabbix_server_ip }}
-          ServerActive={{ zabbix_server_ip }}
-          Hostname={{ ansible_hostname }}
-          ListenIP=0.0.0.0
+        owner: root
+        group: root
+        mode: '0644'
+      notify: restart zabbix-agent
 
     - name: Create log directory
       file:
@@ -28,7 +27,8 @@
         owner: zabbix
         group: zabbix
 
-    - name: Start zabbix-agent
+  handlers:
+    - name: restart zabbix-agent
       systemd:
         name: zabbix-agent
         state: restarted
